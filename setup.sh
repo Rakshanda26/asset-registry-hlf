@@ -1,17 +1,20 @@
 #!/bin/bash
 
-# Variables
-REPO_URL="https://github.com/DayalMukati/hr-insurance-hlf.git"
-TARGET_DIR="$(pwd)"
+# Repo containing the blockchain question
+REPO_URL="https://github.com/Rakshanda26/asset-registry-hlf.git"
 
-# Clone the repository
-echo "Cloning repository from $REPO_URL..."
+# Target directory where challenge files will live
+TARGET_DIR="/home/ubuntu/challenge"
+
+echo "Creating challenge directory..."
+mkdir -p $TARGET_DIR
+
+echo "Cloning repository..."
 git clone $REPO_URL $TARGET_DIR
 
-# Check if clone was successful
 if [ $? -ne 0 ]; then
-    echo "Failed to clone repository. Exiting..."
+    echo "Failed to clone repository"
     exit 1
 fi
 
-echo "Setup complete. Files downloaded."
+echo "Setup complete. Challenge files ready."
