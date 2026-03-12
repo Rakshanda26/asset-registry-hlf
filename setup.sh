@@ -17,4 +17,13 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+echo "Fixing permissions for scripts..."
+
+# Fix permissions for network and scripts
+chmod +x $TARGET_DIR/test-network/network.sh
+chmod +x $TARGET_DIR/test-network/scripts/*.sh
+
+# Ensure candidate can access everything
+chmod -R 755 $TARGET_DIR
+
 echo "Setup complete. Challenge files ready."
