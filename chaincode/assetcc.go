@@ -7,12 +7,10 @@ import (
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
-// SmartContract for asset registry
 type SmartContract struct {
 	contractapi.Contract
 }
 
-// Asset represents a digital asset stored on the blockchain
 type Asset struct {
 	AssetID string `json:"assetID"`
 	Owner   string `json:"owner"`
@@ -20,7 +18,6 @@ type Asset struct {
 	Value   int    `json:"value"`
 }
 
-// RegisterAsset adds a new asset to the ledger
 func (s *SmartContract) RegisterAsset(
 	ctx contractapi.TransactionContextInterface,
 	assetID string,
@@ -29,68 +26,29 @@ func (s *SmartContract) RegisterAsset(
 	value int,
 ) error {
 
-	// Check if asset already exists
-	existingAsset, err := ctx.GetStub().GetState(assetID)
-	if err != nil {
-		return fmt.Errorf("failed to read asset from ledger: %v", err)
-	}
+	// TODO: Implement asset registration logic
 
-	if existingAsset != nil {
-		return fmt.Errorf("asset %s already exists", assetID)
-	}
-
-	// Create asset object
-	asset := Asset{
-		AssetID: assetID,
-		Owner:   owner,
-		Type:    assetType,
-		Value:   value,
-	}
-
-	// Convert to JSON
-	assetJSON, err := json.Marshal(asset)
-	if err != nil {
-		return err
-	}
-
-	// Store in ledger
-	return ctx.GetStub().PutState(assetID, assetJSON)
+	return nil
 }
 
-// GetAsset retrieves an asset from the ledger
 func (s *SmartContract) GetAsset(
 	ctx contractapi.TransactionContextInterface,
 	assetID string,
 ) (*Asset, error) {
 
-	assetJSON, err := ctx.GetStub().GetState(assetID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read asset from ledger: %v", err)
-	}
+	// TODO: Implement asset retrieval logic
 
-	if assetJSON == nil {
-		return nil, fmt.Errorf("asset %s does not exist", assetID)
-	}
-
-	var asset Asset
-	err = json.Unmarshal(assetJSON, &asset)
-	if err != nil {
-		return nil, err
-	}
-
-	return &asset, nil
+	return nil, nil
 }
 
-// Main function to start the chaincode
 func main() {
 
 	chaincode, err := contractapi.NewChaincode(&SmartContract{})
 	if err != nil {
-		fmt.Printf("Error creating asset registry chaincode: %s", err)
-		return
+		panic(fmt.Sprintf("Error creating chaincode: %v", err))
 	}
 
 	if err := chaincode.Start(); err != nil {
-		fmt.Printf("Error starting asset registry chaincode: %s", err)
+		panic(fmt.Sprintf("Error starting chaincode: %v", err))
 	}
 }
