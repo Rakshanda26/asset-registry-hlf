@@ -1,42 +1,55 @@
 #!/bin/bash
 
-# Repo containing the blockchain question
 REPO_URL="https://github.com/Rakshanda26/asset-registry-hlf.git"
-
-# Target directory where challenge files will live
 TARGET_DIR="/home/ubuntu/challenge"
 
-echo "Starting challenge setup..."
+echo "Starting setup..."
 
-# Create challenge directory
-echo "Creating challenge directory..."
 mkdir -p $TARGET_DIR
 
-# Clone repository
 echo "Cloning repository..."
 git clone $REPO_URL $TARGET_DIR
 
 if [ $? -ne 0 ]; then
-    echo "Failed to clone repository"
-    exit 1
+  echo "Failed to clone repository"
+  exit 1
 fi
 
-echo "Repository cloned successfully."
+echo "Installing system dependencies..."
+apt-get update -y
+apt-get install -y curl jq git docker.io docker-compose
 
-# Fix permissions for Hyperledger Fabric scripts
-echo "Fixing script permissions..."
+echo "Starting docker..."
+systemctl start docker || service docker start
+
+echo "Installing Go..."
+
+GO_VERSION="1.20.5"
+curl -L https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz -o go.tar.gz
+tar -xzf go.tar.gz
+mv go /usr/local/
+
+export PATH=$PATH:/usr/local/go/bin
+ln -s /usr/local/go/bin/go /usr/local/bin/go
+
+rm go.tar.gz
+
+echo "Installing Hyperledger Fabric binaries..."
+
+FABRIC_VERSION="2.4.7"
+
+curl -L https://github.com/hyperledger/fabric/releases/download/v${FABRIC_VERSION}/hyperledger-fabric-linux-amd64-${FABRIC_VERSION}.tar.gz -o fabric.tar.gz
+
+tar -xzf fabric.tar.gz
+
+cp bin/* /usr/local/bin/
+
+rm -rf bin builders config fabric.tar.gz
+
+echo "Fixing permissions..."
 
 chmod +x $TARGET_DIR/test-network/network.sh
 chmod +x $TARGET_DIR/test-network/scripts/*.sh
-
-# Ensure all test-network scripts are executable
 chmod -R +x $TARGET_DIR/test-network
 
-# Ensure candidate has access
-chmod -R 755 $TARGET_DIR
-
-echo "Setup complete. Challenge environment ready."
-
-# Show directory for debugging
-echo "Challenge directory structure:"
-ls -la $TARGET_DIR
+echo "Setup completed successfully."
